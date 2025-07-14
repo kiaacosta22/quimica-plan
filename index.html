@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Malla Curricular - Ingeniería Química UTN BA</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f7f7f7;
+}
+h1 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+#contenedor-anios {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    justify-content: center;
+}
+.anio {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.anio h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 18px;
+    border-bottom: 2px solid #ddd;
+    width: 100%;
+    padding-bottom: 5px;
+}
+.card {
+    width: 160px;
+    margin: 5px 0;
+    background: #fafafa;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: 0.3s;
+    border: 2px solid transparent;
+    font-size: 14px;
+}
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.card.aprobada {
+    text-decoration: line-through;
+    font-weight: bold;
+    color: #444;
+}
+.card.bloqueada {
+    background: #eee;
+    color: #999;
+    cursor: not-allowed;
+    border-color: #bbb;
+}
+.anio-1 .card.aprobada { background: #d0f0fd; border-color: #90caf9; }
+.anio-2 .card.aprobada { background: #d7f9d0; border-color: #a5d6a7; }
+.anio-3 .card.aprobada { background: #fff9c4; border-color: #ffe082; }
+.anio-4 .card.aprobada { background: #fddde6; border-color: #f8bbd0; }
+.anio-5 .card.aprobada { background: #f5f5f5; border-color: #bdbdbd; }
+</style>
+</head>
+<body>
+<h1>Malla Interactiva - Ingeniería Química UTN BA</h1>
+<div id="contenedor-anios"></div>
+<script>
+const materias = [
+// Aquí van todas las materias completas con sus correlativas según tu lista
+];
+const estado = {};
+const contenedor = document.getElementById("contenedor-anios");
+const años = [1,2,3,4,5];
+function verificarBloqueo(m) {
+    return m.correlativas.some(c => !estado[c]);
+}
+function actualizarEstado() {
+    materias.forEach(m => {
+        const bloqueada = verificarBloqueo(m);
+        if (bloqueada) {
+            m.elemento.classList.add("bloqueada");
+            m.elemento.classList.remove("aprobada");
+            estado[m.nombre] = false;
+        } else {
+            m.elemento.classList.remove("bloqueada");
+        }
+    });
+}
+años.forEach(anio => {
+    const bloque = document.createElement("div");
+    bloque.className = `anio anio-${anio}`;
+    const titulo = document.createElement("h2");
+    titulo.textContent = `${anio}° Año`;
+    bloque.appendChild(titulo);
+    materias.filter(m => m.anio === anio).forEach(m => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.textContent = m.nombre;
+        card.onclick = () => {
+            if (card.classList.contains("bloqueada")) return;
+            if (card.classList.contains("aprobada")) {
+                card.classList.remove("aprobada");
+                estado[m.nombre] = false;
+            } else {
+                card.classList.add("aprobada");
+                estado[m.nombre] = true;
+            }
+            actualizarEstado();
+        };
+        m.elemento = card;
+        estado[m.nombre] = false;
+        bloque.appendChild(card);
+    });
+    contenedor.appendChild(bloque);
+});
+actualizarEstado();
+</script>
+</body>
+</html>
